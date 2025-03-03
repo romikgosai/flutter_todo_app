@@ -37,9 +37,11 @@ class _MyHomePageState extends State<MyHomePage> {
   final List<TodoItem> _todoItems = [];
 
   // Method to add a new todo item with a deadline
-  void _addTodoItem(String title, DateTime deadline) {
+  void _addTodoItem(String title, DateTime? deadline) {
     setState(() {
-      _todoItems.add(TodoItem(title: title, deadline: deadline));
+      _todoItems.add(
+        TodoItem(title: title, deadline: deadline ?? DateTime.now()),
+      );
     });
   }
 
@@ -112,8 +114,8 @@ class _MyHomePageState extends State<MyHomePage> {
                 TextButton(
                   child: const Text('Add'),
                   onPressed: () {
-                    if (newTodoTitle.isNotEmpty && selectedDeadline != null) {
-                      _addTodoItem(newTodoTitle, selectedDeadline!);
+                    if (newTodoTitle.isNotEmpty) {
+                      _addTodoItem(newTodoTitle, selectedDeadline);
                       Navigator.of(context).pop();
                     }
                   },
@@ -128,9 +130,21 @@ class _MyHomePageState extends State<MyHomePage> {
 
   // Method to calculate remaining or exceeded days with color indication
   String _calculateRemainingDays(DateTime deadline) {
-    final Duration difference = deadline.difference(DateTime.now());
-    if (difference.isNegative) {
+    final DateTime now = DateTime.now();
+    final DateTime today = DateTime(now.year, now.month, now.day);
+    final DateTime targetDay = DateTime(
+      deadline.year,
+      deadline.month,
+      deadline.day,
+    );
+    final Duration difference = targetDay.difference(today);
+
+    if (difference.inDays < 0) {
       return '${difference.inDays.abs()} days exceeded';
+    } else if (difference.inDays == 0) {
+      return 'today';
+    } else if (difference.inDays == 1) {
+      return 'tomorrow';
     } else {
       return '${difference.inDays} days remaining';
     }
@@ -138,7 +152,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   Color _getDeadlineColor(DateTime deadline) {
     final Duration difference = deadline.difference(DateTime.now());
-    if (difference.isNegative) {
+    if (difference.inDays.isNegative) {
       return Colors.red; // Red color for exceeded days
     } else {
       return Colors.black; // Default color for remaining days
