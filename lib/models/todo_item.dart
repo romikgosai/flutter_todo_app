@@ -6,6 +6,9 @@ class TodoItem {
   // Boolean indicating whether the todo item is done
   bool isDone;
 
+  // Deadline of the todo item
+  final DateTime deadline;
+
   // Constructor to initialize the todo item
-  TodoItem({required this.title, this.isDone = false});
+  TodoItem({required this.title, this.isDone = false, required this.deadline});
 }
