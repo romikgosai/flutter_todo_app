@@ -44,9 +44,9 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   // Method to toggle the completion status of a todo item
-  void _toggleTodoItem(int index) {
+  void _toggleTodoItem(TodoItem item) {
     setState(() {
-      _todoItems[index].isDone = !_todoItems[index].isDone;
+      item.isDone = !item.isDone;
     });
   }
 
@@ -147,59 +147,148 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
+    // Separate lists for todos and completed items
+    final List<TodoItem> todos =
+        _todoItems.where((item) => !item.isDone).toList();
+    final List<TodoItem> completed =
+        _todoItems.where((item) => item.isDone).toList();
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         title: Text(widget.title),
       ),
-      body: ListView.builder(
-        itemCount: _todoItems.length,
-        itemBuilder: (context, index) {
-          final todoItem = _todoItems[index];
-          return Container(
-            margin: const EdgeInsets.symmetric(vertical: 5, horizontal: 10),
-            child: Card(
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(15),
-              ),
-              child: Padding(
-                padding: const EdgeInsets.only(left: 16.0), // Added left padding
-                child: ListTile(
-                  title: Text(
-                    todoItem.title,
-                    style: TextStyle(
-                      fontSize: 24, // Increased font size
-                      fontFamily: 'Roboto', // Modern font
-                      decoration:
-                          todoItem.isDone ? TextDecoration.lineThrough : null,
-                    ),
-                  ),
-                  subtitle: Text(
-                    _calculateRemainingDays(todoItem.deadline),
-                    style: TextStyle(color: _getDeadlineColor(todoItem.deadline)),
-                  ),
-                  trailing: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Checkbox(
-                        value: todoItem.isDone,
-                        onChanged: (bool? value) {
-                          _toggleTodoItem(index);
-                        },
-                      ),
-                      IconButton(
-                        icon: const Icon(Icons.delete),
-                        onPressed: () {
-                          _deleteTodoItem(index);
-                        },
-                      ),
-                    ],
-                  ),
-                ),
+      body: Column(
+        children: [
+          if (todos.isNotEmpty) ...[
+            const Padding(
+              padding: EdgeInsets.all(8.0),
+              child: Text(
+                'Todos',
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
               ),
             ),
-          );
-        },
+            Expanded(
+              child: ListView.builder(
+                itemCount: todos.length,
+                itemBuilder: (context, index) {
+                  final todoItem = todos[index];
+                  return Container(
+                    margin: const EdgeInsets.symmetric(
+                      vertical: 5,
+                      horizontal: 10,
+                    ),
+                    child: Card(
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(15),
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.only(left: 16.0),
+                        child: ListTile(
+                          title: Text(
+                            todoItem.title,
+                            style: TextStyle(
+                              fontSize: 24, // Increased font size
+                              fontFamily: 'Roboto', // Modern font
+                            ),
+                          ),
+                          subtitle: Text(
+                            _calculateRemainingDays(todoItem.deadline),
+                            style: TextStyle(
+                              color: _getDeadlineColor(todoItem.deadline),
+                            ),
+                          ),
+                          trailing: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Checkbox(
+                                value: todoItem.isDone,
+                                onChanged: (bool? value) {
+                                  _toggleTodoItem(todoItem);
+                                },
+                              ),
+                              IconButton(
+                                icon: const Icon(Icons.delete),
+                                onPressed: () {
+                                  _deleteTodoItem(index);
+                                },
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ),
+          ],
+          if (completed.isNotEmpty) ...[
+            const Divider(),
+            const Padding(
+              padding: EdgeInsets.all(8.0),
+              child: Text(
+                'Completed',
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              ),
+            ),
+            Expanded(
+              child: ListView.builder(
+                itemCount: completed.length,
+                itemBuilder: (context, index) {
+                  final todoItem = completed[index];
+                  return Container(
+                    margin: const EdgeInsets.symmetric(
+                      vertical: 5,
+                      horizontal: 10,
+                    ),
+                    child: Card(
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(15),
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.only(left: 16.0),
+                        child: ListTile(
+                          title: Text(
+                            todoItem.title,
+                            style: TextStyle(
+                              fontSize: 24, // Increased font size
+                              fontFamily: 'Roboto', // Modern font
+                              decoration: TextDecoration.lineThrough,
+                            ),
+                          ),
+                          subtitle: Text(
+                            _calculateRemainingDays(todoItem.deadline),
+                            style: TextStyle(
+                              color: _getDeadlineColor(todoItem.deadline),
+                            ),
+                          ),
+                          trailing: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Checkbox(
+                                value: todoItem.isDone,
+                                onChanged: (bool? value) {
+                                  _toggleTodoItem(todoItem);
+                                },
+                              ),
+                              IconButton(
+                                icon: const Icon(Icons.delete),
+                                onPressed: () {
+                                  _deleteTodoItem(index);
+                                },
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ),
+          ],
+        ],
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: _promptAddTodoItem,
