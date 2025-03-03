@@ -50,6 +50,13 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
+  // Method to delete a todo item
+  void _deleteTodoItem(int index) {
+    setState(() {
+      _todoItems.removeAt(index);
+    });
+  }
+
   // Method to prompt the user to add a new todo item
   void _promptAddTodoItem() {
     showDialog(
@@ -104,11 +111,22 @@ class _MyHomePageState extends State<MyHomePage> {
                 decoration: todoItem.isDone ? TextDecoration.lineThrough : null,
               ),
             ),
-            trailing: Checkbox(
-              value: todoItem.isDone,
-              onChanged: (bool? value) {
-                _toggleTodoItem(index);
-              },
+            trailing: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Checkbox(
+                  value: todoItem.isDone,
+                  onChanged: (bool? value) {
+                    _toggleTodoItem(index);
+                  },
+                ),
+                IconButton(
+                  icon: const Icon(Icons.delete),
+                  onPressed: () {
+                    _deleteTodoItem(index);
+                  },
+                ),
+              ],
             ),
           );
         },
