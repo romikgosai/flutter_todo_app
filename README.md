@@ -43,8 +43,10 @@ A simple Flutter application to manage a list of todo items.
 
 ### Screenshots
 
-![Screenshot 1](screenshots/screenshot1.png)
-![Screenshot 2](screenshots/screenshot2.png)
+<p float="left">
+  <img src="screenshots/screenshot1.jpg" alt="Screenshot 1" width="300" style="margin-right: 30px;"/>
+  <img src="screenshots/screenshot2.jpg" alt="Screenshot 2" width="300"/>
+</p>
 
 ### Contributing
 
