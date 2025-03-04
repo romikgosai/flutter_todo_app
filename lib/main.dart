@@ -83,9 +83,9 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   // Method to delete a todo item
-  void _deleteTodoItem(int index) {
+  void _deleteTodoItem(TodoItem item) {
     setState(() {
-      _todoItems.removeAt(index);
+      _todoItems.remove(item);
       _saveTodoItems();
     });
   }
@@ -261,7 +261,7 @@ class _MyHomePageState extends State<MyHomePage> {
                               IconButton(
                                 icon: const Icon(Icons.delete),
                                 onPressed: () {
-                                  _deleteTodoItem(index);
+                                  _deleteTodoItem(todoItem);
                                 },
                               ),
                             ],
@@ -326,7 +326,7 @@ class _MyHomePageState extends State<MyHomePage> {
                               IconButton(
                                 icon: const Icon(Icons.delete),
                                 onPressed: () {
-                                  _deleteTodoItem(index);
+                                  _deleteTodoItem(todoItem);
                                 },
                               ),
                             ],
