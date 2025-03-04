@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'dart:convert';
 import 'models/todo_item.dart';
 
 // Entry point of the application
@@ -13,7 +15,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'Flutter Todo App',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
       ),
@@ -36,12 +38,39 @@ class _MyHomePageState extends State<MyHomePage> {
   // List to store todo items
   final List<TodoItem> _todoItems = [];
 
+  @override
+  void initState() {
+    super.initState();
+    _loadTodoItems();
+  }
+
+  // Method to load todo items from shared preferences
+  void _loadTodoItems() async {
+    final prefs = await SharedPreferences.getInstance();
+    final String? todoItemsString = prefs.getString('todoItems');
+    if (todoItemsString != null) {
+      final List<dynamic> todoItemsJson = jsonDecode(todoItemsString);
+      setState(() {
+        _todoItems.clear();
+        _todoItems.addAll(todoItemsJson.map((item) => TodoItem.fromJson(item)));
+      });
+    }
+  }
+
+  // Method to save todo items to shared preferences
+  void _saveTodoItems() async {
+    final prefs = await SharedPreferences.getInstance();
+    final String todoItemsString = jsonEncode(_todoItems);
+    await prefs.setString('todoItems', todoItemsString);
+  }
+
   // Method to add a new todo item with a deadline
   void _addTodoItem(String title, DateTime? deadline) {
     setState(() {
       _todoItems.add(
         TodoItem(title: title, deadline: deadline ?? DateTime.now()),
       );
+      _saveTodoItems();
     });
   }
 
@@ -49,6 +78,7 @@ class _MyHomePageState extends State<MyHomePage> {
   void _toggleTodoItem(TodoItem item) {
     setState(() {
       item.isDone = !item.isDone;
+      _saveTodoItems();
     });
   }
 
@@ -56,6 +86,7 @@ class _MyHomePageState extends State<MyHomePage> {
   void _deleteTodoItem(int index) {
     setState(() {
       _todoItems.removeAt(index);
+      _saveTodoItems();
     });
   }
 
@@ -170,7 +201,13 @@ class _MyHomePageState extends State<MyHomePage> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: Text(widget.title),
+        title: Row(
+          children: [
+            Image.asset('assets/logo.png', height: 40),
+            const SizedBox(width: 10),
+            Text(widget.title),
+          ],
+        ),
       ),
       body: Column(
         children: [

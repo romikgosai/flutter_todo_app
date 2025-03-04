@@ -41,6 +41,7 @@ A simple Flutter application to manage a list of todo items.
 - Toggle the completion status of todo items.
 - Set deadlines for todo items.
 - View remaining or exceeded days for each todo item.
+- Tasks are stored persistently using device storage (shared_preferences).
 
 ### Screenshots
 
